@@ -3,6 +3,10 @@ import { auth } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+  signInWithPopup,
+  updateProfile
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "./AuthForm.css";
@@ -21,6 +25,9 @@ const AuthForm = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const googleProvider = new GoogleAuthProvider();
+  const githubProvider = new GithubAuthProvider();
 
   // ---------------- LOGIN ----------------
   const handleLogin = async (e) => {
@@ -51,17 +58,44 @@ const AuthForm = () => {
     setLoading(true);
 
     try {
-      await createUserWithEmailAndPassword(
+      const userCredential = await createUserWithEmailAndPassword(
         auth,
         signupEmail,
         signupPassword
       );
+
+      await updateProfile(userCredential.user, {
+        displayName: signupName,
+      });
+
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
     }
 
     setLoading(false);
+  };
+
+  // ---------------- GOOGLE ----------------
+  const handleGoogleLogin = async () => {
+    setError("");
+    try {
+      await signInWithPopup(auth, googleProvider);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // ---------------- GITHUB ----------------
+  const handleGithubLogin = async () => {
+    setError("");
+    try {
+      await signInWithPopup(auth, githubProvider);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -104,6 +138,15 @@ const AuthForm = () => {
           <button type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>
+
+          <div className="oauth-buttons">
+            <button type="button" onClick={handleGoogleLogin}>
+              Continue with Google
+            </button>
+            <button type="button" onClick={handleGithubLogin}>
+              Continue with GitHub
+            </button>
+          </div>
         </form>
       )}
 
@@ -145,6 +188,15 @@ const AuthForm = () => {
           <button type="submit" disabled={loading}>
             {loading ? "Creating account..." : "Sign Up"}
           </button>
+
+          <div className="oauth-buttons">
+            <button type="button" onClick={handleGoogleLogin}>
+              Continue with Google
+            </button>
+            <button type="button" onClick={handleGithubLogin}>
+              Continue with GitHub
+            </button>
+          </div>
         </form>
       )}
 
