@@ -37,7 +37,7 @@ const AuthForm = () => {
 
     try {
       await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-      navigate("/dashboard");
+      navigate("/Home");
     } catch (err) {
       setError(err.message);
     }
@@ -68,7 +68,7 @@ const AuthForm = () => {
         displayName: signupName,
       });
 
-      navigate("/dashboard");
+      navigate("/Home");
     } catch (err) {
       setError(err.message);
     }
