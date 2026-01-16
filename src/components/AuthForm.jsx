@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { auth } from "../firebase";
 import {
   createUserWithEmailAndPassword,
@@ -6,7 +6,10 @@ import {
   GoogleAuthProvider,
   GithubAuthProvider,
   signInWithPopup,
-  updateProfile
+  updateProfile,
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  onAuthStateChanged
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "./AuthForm.css";
@@ -29,6 +32,34 @@ const AuthForm = () => {
   const googleProvider = new GoogleAuthProvider();
   const githubProvider = new GithubAuthProvider();
 
+  // ---------------- AUTH PERSISTENCE ----------------
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.emailVerified) {
+        navigate("/dashboard");
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
+
+  // ---------------- ERROR MAPPING ----------------
+  const getErrorMessage = (code) => {
+    switch (code) {
+      case "auth/user-not-found":
+        return "No account found with this email.";
+      case "auth/wrong-password":
+        return "Incorrect password.";
+      case "auth/email-already-in-use":
+        return "Email already registered.";
+      case "auth/weak-password":
+        return "Password should be at least 6 characters.";
+      case "auth/invalid-email":
+        return "Invalid email address.";
+      default:
+        return "Something went wrong. Try again.";
+    }
+  };
+
   // ---------------- LOGIN ----------------
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -36,13 +67,23 @@ const AuthForm = () => {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
-      navigate("/Home");
-    } catch (err) {
-      setError(err.message);
-    }
+      const res = await signInWithEmailAndPassword(
+        auth,
+        loginEmail,
+        loginPassword
+      );
 
-    setLoading(false);
+      if (!res.user.emailVerified) {
+        setError("Please verify your email before logging in.");
+        return;
+      }
+
+      navigate("/dashboard");
+    } catch (err) {
+      setError(getErrorMessage(err.code));
+    } finally {
+      setLoading(false);
+    }
   };
 
   // ---------------- SIGNUP ----------------
@@ -68,33 +109,57 @@ const AuthForm = () => {
         displayName: signupName,
       });
 
-      navigate("/Home");
+      await sendEmailVerification(userCredential.user);
+
+      setError("Verification email sent. Please check your inbox.");
+      setActiveTab("login");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorMessage(err.code));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ---------------- FORGOT PASSWORD ----------------
+  const handleForgotPassword = async () => {
+    if (!loginEmail) {
+      setError("Enter your email to reset password.");
+      return;
     }
 
-    setLoading(false);
+    try {
+      await sendPasswordResetEmail(auth, loginEmail);
+      setError("Password reset email sent.");
+    } catch (err) {
+      setError(getErrorMessage(err.code));
+    }
   };
 
   // ---------------- GOOGLE ----------------
   const handleGoogleLogin = async () => {
     setError("");
+    setLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorMessage(err.code));
+    } finally {
+      setLoading(false);
     }
   };
 
   // ---------------- GITHUB ----------------
   const handleGithubLogin = async () => {
     setError("");
+    setLoading(true);
     try {
       await signInWithPopup(auth, githubProvider);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message);
+      setError(getErrorMessage(err.code));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -136,15 +201,19 @@ const AuthForm = () => {
           />
 
           <button type="submit" disabled={loading}>
-            <i className="fa-solid fa-envelope"></i> &nbsp;
-            {loading ? "Logging in..." : "Login"}
+            <i className="fa-solid fa-envelope"></i>&nbsp;
+            {loading ? "Logging in..." : "Login with Email"}
           </button>
 
+          <p className="forgot" onClick={handleForgotPassword}>
+            Forgot password?
+          </p>
+
           <div className="oauth-buttons">
-            <button type="button" onClick={handleGoogleLogin}>
+            <button type="button" disabled={loading} onClick={handleGoogleLogin}>
               <i className="fa-brands fa-google"></i> Continue with Google
             </button>
-            <button type="button" onClick={handleGithubLogin}>
+            <button type="button" disabled={loading} onClick={handleGithubLogin}>
               <i className="fa-brands fa-github"></i> Continue with GitHub
             </button>
           </div>
@@ -187,23 +256,22 @@ const AuthForm = () => {
           />
 
           <button type="submit" disabled={loading}>
-            <i className="fa-solid fa-user-plus"></i> &nbsp;
-            {loading ? "Creating account..." : "Sign Up"}
+            <i className="fa-solid fa-user-plus"></i>&nbsp;
+            {loading ? "Creating account..." : "Sign Up with Email"}
           </button>
 
           <div className="oauth-buttons">
-            <button type="button" onClick={handleGoogleLogin}>
+            <button type="button" disabled={loading} onClick={handleGoogleLogin}>
               <i className="fa-brands fa-google"></i> Continue with Google
             </button>
-            <button type="button" onClick={handleGithubLogin}>
+            <button type="button" disabled={loading} onClick={handleGithubLogin}>
               <i className="fa-brands fa-github"></i> Continue with GitHub
             </button>
           </div>
         </form>
       )}
 
-      {/* Error */}
-      {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+      {error && <p className="error">{error}</p>}
     </div>
   );
 };
