@@ -12,6 +12,27 @@ import { useNavigate } from "react-router-dom";
 import "./AuthForm.css";
 
 const AuthForm = () => {
+  // ... inside AuthForm component ...
+
+  // HELPER: Syncs Firebase User with MongoDB
+  const syncWithBackend = async (user) => {
+    try {
+      await fetch("http://localhost:5000/api/auth/sync", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firebaseUid: user.uid,
+          email: user.email,
+          name: user.displayName || user.email.split('@')[0] // Fallback name
+        }),
+      });
+    } catch (error) {
+      console.error("Backend Sync Failed:", error);
+    }
+  };
+
+// ... keep reading below for where to put this ...
+
   const [activeTab, setActiveTab] = useState("login");
   const navigate = useNavigate();
 
@@ -36,12 +57,12 @@ const AuthForm = () => {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword);
+      await syncWithBackend(userCredential.user); // <--- ADDED THIS
       navigate("/Home");
     } catch (err) {
       setError(err.message);
     }
-
     setLoading(false);
   };
 
@@ -68,6 +89,7 @@ const AuthForm = () => {
         displayName: signupName,
       });
 
+      await syncWithBackend(userCredential.user); // <--- ADDED THIS
       navigate("/Home");
     } catch (err) {
       setError(err.message);
@@ -80,7 +102,8 @@ const AuthForm = () => {
   const handleGoogleLogin = async () => {
     setError("");
     try {
-      await signInWithPopup(auth, googleProvider);
+      const result = await signInWithPopup(auth, googleProvider);
+      await syncWithBackend(result.user); // <--- ADDED THIS
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
@@ -91,7 +114,8 @@ const AuthForm = () => {
   const handleGithubLogin = async () => {
     setError("");
     try {
-      await signInWithPopup(auth, githubProvider);
+      const result = await signInWithPopup(auth, githubProvider);
+      await syncWithBackend(result.user); // <--- ADDED THIS
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);

@@ -9,14 +9,22 @@ const Dashboard = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const user = auth.currentUser;
-    if (user) {
-      setUserName(user.displayName || user.email);
-    }
+  const fetchDashboard = async () => {
+    const token = await auth.currentUser.getIdToken();
 
-    // Fetch posts
-    fetchPosts();
+    const res = await fetch("http://localhost:5000/api/user/dashboard", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+    console.log("Backend data:", data);
+  };
+
+  fetchDashboard();
   }, []);
+
 
   const fetchPosts = async () => {
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
