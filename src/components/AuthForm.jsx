@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "./AuthForm.css";
+import name from './images/logo.png';
 
 const AuthForm = () => {
   const [activeTab, setActiveTab] = useState("login");
@@ -98,8 +99,9 @@ const AuthForm = () => {
     }
   };
 
-  return (
-    <div className="container">
+  return ( 
+<><img class="logo" src={name} alt="CollabHub" height="230" width="500" /><div className="container">
+    
       {/* Tabs */}
       <div className="tab-header">
         <div
@@ -124,16 +126,14 @@ const AuthForm = () => {
             placeholder="Email"
             value={loginEmail}
             onChange={(e) => setLoginEmail(e.target.value)}
-            required
-          />
+            required />
 
           <input
             type="password"
             placeholder="Password"
             value={loginPassword}
             onChange={(e) => setLoginPassword(e.target.value)}
-            required
-          />
+            required />
 
           <button type="submit" disabled={loading}>
             <i className="fa-solid fa-envelope"></i> &nbsp;
@@ -159,32 +159,28 @@ const AuthForm = () => {
             placeholder="Full Name"
             value={signupName}
             onChange={(e) => setSignupName(e.target.value)}
-            required
-          />
+            required />
 
           <input
             type="email"
             placeholder="Email"
             value={signupEmail}
             onChange={(e) => setSignupEmail(e.target.value)}
-            required
-          />
+            required />
 
           <input
             type="password"
             placeholder="Password"
             value={signupPassword}
             onChange={(e) => setSignupPassword(e.target.value)}
-            required
-          />
+            required />
 
           <input
             type="password"
             placeholder="Confirm Password"
             value={signupConfirmPassword}
             onChange={(e) => setSignupConfirmPassword(e.target.value)}
-            required
-          />
+            required />
 
           <button type="submit" disabled={loading}>
             <i className="fa-solid fa-user-plus"></i> &nbsp;
@@ -204,7 +200,7 @@ const AuthForm = () => {
 
       {/* Error */}
       {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
-    </div>
+    </div></>
   );
 };
 
