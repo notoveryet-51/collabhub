@@ -340,6 +340,7 @@ const AuthForm = () => {
   // ---------------- AUTH PERSISTENCE ----------------
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+<<<<<<< HEAD
       if (user && user.emailVerified) {
         // UPDATE: Agar user pehle se logged in hai, toh uska data refresh hone par bhi save rakhein
         const userData = {
@@ -350,6 +351,11 @@ const AuthForm = () => {
         localStorage.setItem("userLoggedIn", JSON.stringify(userData));
         navigate("/dashboard");
       }
+=======
+      if (user && (user.emailVerified || user.providerData[0].providerId !== "password")) {
+  navigate("/dashboard");
+}
+>>>>>>> fa5378d2e0d9774acf34f0b5eef72c25191dab41
     });
     return () => unsubscribe();
   }, [navigate]);
@@ -398,6 +404,7 @@ const AuthForm = () => {
 
       if (!res.user.emailVerified) {
         setError("Please verify your email before logging in.");
+        setLoading(false);
         return;
       }
 
@@ -494,7 +501,7 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="container">
       {/* Tabs */}
       <div className="tab-header">
         <div
