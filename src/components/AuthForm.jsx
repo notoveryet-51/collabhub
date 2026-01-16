@@ -33,14 +33,14 @@ const AuthForm = () => {
   const githubProvider = new GithubAuthProvider();
 
   // ---------------- AUTH PERSISTENCE ----------------
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && (user.emailVerified || user.providerData[0].providerId !== "password")) {
-  navigate("/dashboard");
-}
-    });
-    return () => unsubscribe();
-  }, [navigate]);
+//   useEffect(() => {
+//     const unsubscribe = onAuthStateChanged(auth, (user) => {
+//       if (user && (user.emailVerified || user.providerData[0].providerId !== "password")) {
+//   navigate("/dashboard");
+// }
+//     });
+//     return () => unsubscribe();
+//   }, [navigate]);
 
   // ---------------- ERROR MAPPING ----------------
   const getErrorMessage = (code) => {
