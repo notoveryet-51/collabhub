@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
-import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot, updateDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
   const [posts, setPosts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("All");
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -86,15 +84,15 @@ const Dashboard = () => {
             <p>MNNIT Allahabad Student</p>
           </div>
 
-          <div className="filter-section">
-            <h4>Filter by Category</h4>
-            <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-              <option value="All">All Categories</option>
-              <option value="Exam Prep">Exam Prep</option>
-              <option value="Project Team">Project Team</option>
-              <option value="Assignment">Assignment</option>
-              <option value="Daily Study">Daily Study</option>
-            </select>
+          <div className="skills-cloud-card">
+            <h4>Knowledge Network 🌐</h4>
+            <div className="cloud-tags">
+              <span className="cloud-tag active">React</span>
+              <span className="cloud-tag">Python</span>
+              <span className="cloud-tag">DSA</span>
+              <span className="cloud-tag">AI/ML</span>
+              <span className="cloud-tag">Figma</span>
+            </div>
           </div>
 
           <div className="quick-links">
@@ -122,29 +120,27 @@ const Dashboard = () => {
                 <p>3 Days</p>
               </div>
             </div>
-
-            <div className="analytics-card">
-              <div className="analytics-icon">🤝</div>
-              <div className="analytics-info">
-                <h3>My Requests</h3>
-                <p>{myRequestsCount} Posts</p>
+            <div className="stat-widget">
+              <div className="widget-icon clock">⌛</div>
+              <div className="widget-data">
+                <span>Study Hours</span>
+                <h4>12.5 hrs</h4>
               </div>
             </div>
-
-            <div className="analytics-card">
-              <div className="analytics-icon">📚</div>
-              <div className="analytics-info">
-                <h3>Study Hours</h3>
-                <p>8.2 hrs</p>
+            <div className="stat-widget">
+              <div className="widget-icon check">✅</div>
+              <div className="widget-data">
+                <span>Completed</span>
+                <h4>8 Sessions</h4>
               </div>
             </div>
+          </section>
 
-            <div className="analytics-card">
-              <div className="analytics-icon">⭐</div>
-              <div className="analytics-info">
-                <h3>Reputation</h3>
-                <p>4.9/5.0</p>
-              </div>
+          {/* --- RATING BREAKDOWN GRAPH --- */}
+          <section className="rating-analytics-card">
+            <div className="rating-header">
+              <h3>Collaboration Rating</h3>
+              <div className="rating-score">4.9 <span>★</span></div>
             </div>
           </div>
 
@@ -227,12 +223,16 @@ const Dashboard = () => {
             </ul>
           </div>
 
-          <div className="activity-box">
-            <h4>Activity History</h4>
-            <div className="activity-item">✔ Joined OS Session</div>
-            <div className="activity-item">✔ Posted DSA Request</div>
+          <div className="activity-card-modern">
+            <h4>History</h4>
+            <ul className="history-list">
+              <li>Completed OS Prep</li>
+              <li>Joined WebDev Group</li>
+              <li>Earned "Helper" Badge</li>
+            </ul>
           </div>
         </aside>
+
       </div>
     </div>
   );

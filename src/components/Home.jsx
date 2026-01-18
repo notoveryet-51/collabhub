@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { db, auth } from "../firebase";
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
 import "./Home.css";
 
 function Home() {
   // STATE
   const [posts, setPosts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -74,6 +77,7 @@ function Home() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+        </section>
 
           {/* LOADING */}
           {loading && <p>Loading study requests...</p>}
