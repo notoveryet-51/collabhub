@@ -1,3 +1,4 @@
+import JoinButton from './JoinButton'; // <--- Importing this as it links  the new JoinButton
 import { useState, useEffect } from "react";
 import "./Home.css";
 
