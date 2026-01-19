@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
-import { collection, query, orderBy, onSnapshot, updateDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
+import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
   const [posts, setPosts] = useState([]);
-  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // 🔧 missing states (fixed)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("All");
 
   const navigate = useNavigate();
 
@@ -68,11 +77,6 @@ const Dashboard = () => {
         post.subject?.toLowerCase().includes(searchTerm.toLowerCase())) &&
       (filter === "All" || post.category === filter)
   );
-
-  // 🔹 5. Simple analytics
-  const myRequestsCount = posts.filter(
-    (p) => p.uid === auth.currentUser?.uid
-  ).length;
 
   return (
     <div className="dashboard-container">
@@ -134,15 +138,17 @@ const Dashboard = () => {
                 <h4>8 Sessions</h4>
               </div>
             </div>
-          </section>
+          </div>
 
-          {/* --- RATING BREAKDOWN GRAPH --- */}
+          {/* RATING */}
           <section className="rating-analytics-card">
             <div className="rating-header">
               <h3>Collaboration Rating</h3>
-              <div className="rating-score">4.9 <span>★</span></div>
+              <div className="rating-score">
+                4.9 <span>★</span>
+              </div>
             </div>
-          </div>
+          </section>
 
           {/* SEARCH */}
           <div className="search-box">
@@ -232,7 +238,6 @@ const Dashboard = () => {
             </ul>
           </div>
         </aside>
-
       </div>
     </div>
   );
