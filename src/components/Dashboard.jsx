@@ -14,6 +14,10 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState(""); 
   const [filter, setFilter] = useState("All");
 
+  // 🔧 missing states (fixed)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("All");
+
   const navigate = useNavigate();
 
   // 🔹 1. Auth check + backend dashboard fetch
@@ -114,11 +118,13 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* --- RATING BREAKDOWN GRAPH --- */}
+          {/* RATING */}
           <section className="rating-analytics-card">
             <div className="rating-header">
               <h3>Collaboration Rating</h3>
-              <div className="rating-score">4.9 <span>★</span></div>
+              <div className="rating-score">
+                4.9 <span>★</span>
+              </div>
             </div>
           </section> {/* <--- FIXED: Changed from </div> to </section> */}
 
@@ -182,7 +188,6 @@ const Dashboard = () => {
             </ul>
           </div>
         </aside>
-
       </div>
     </div>
   );

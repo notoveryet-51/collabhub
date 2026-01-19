@@ -10,19 +10,17 @@ function Home() {
 
   // --- FETCH FROM YOUR BACKEND ---
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/posts");
-        const data = await response.json();
-        setPosts(data);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const postsArray = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPosts(postsArray);
+      setLoading(false);
+    });
 
-    fetchPosts();
+    return () => unsubscribe();
   }, []);
 
   // --- FILTER LOGIC ---
@@ -45,35 +43,44 @@ function Home() {
   };
 
   return (
-    <>
-      {/* NAVBAR */}
-      <div className="navbar">
-        <div className="logo">Collab-Hub</div>
-        <div className="nav-links">
-          <a className="nav-item active" href="/Home">🏠 Home</a>
-          <a className="nav-item" href="/Dashboard">📊 Dashboard</a>
-          <a className="nav-item" href="/profile">👤 Profile</a>
-          <a className="nav-item" href="/create">➕ Create Request</a>
-        </div>
-      </div>
+    <div className="home-page">
+      <main className="container">
+        {/* SMART MATCHING SECTION */}
+        {matchedPosts.length > 0 && (
+          <section className="matching-section">
+            <h2>Recommended for You 🎯</h2>
+            <div className="match-grid">
+              {matchedPosts.map(post => (
+                <div key={post.id} className="match-card">
+                  <span className="match-tag">Matched with your interests</span>
+                  <h4>{post.subject}: {post.topic}</h4>
+                  <button onClick={() => handleJoinSession(post.id, post.name)}>Quick Join</button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
-      {/* MAIN CONTENT */}
-      <div className="home-page">
-        <main className="container">
-          <h1 className="page-title">Available Study Requests</h1>
-          <p className="subtitle">
-            Browse and join study sessions posted by fellow students
-          </p>
-
-          {/* SEARCH */}
-          <div className="search-container">
-            <input
-              className="search-box"
-              type="text"
-              placeholder="🔍 Search by subject or topic..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        {/* HACKATHONS SECTION (Horizontal Scroll) */}
+        <section className="section-container">
+          <div className="section-header">
+            <h2>Upcoming Hackathons</h2>
+            <span className="arrow-icon">➔</span>
+          </div>
+          <div className="hackathon-row">
+            {[
+              { id: 1, title: "Code-Sprint 2026", desc: "Build the future of AI" },
+              { id: 2, title: "Design-a-thon", desc: "UI/UX Challenge" },
+              { id: 3, title: "Web3 Summit", desc: "Blockchain Innovation" },
+              { id: 4, title: "Data-Hacks", desc: "Big Data Solutions" }
+            ].map((event) => (
+              <div className="hackathon-card" key={event.id}>
+                <div className="event-tag">Upcoming</div>
+                <h4>{event.title}</h4>
+                <p>{event.desc}</p>
+                <button className="cal-btn" onClick={() => addToCalendar(event)}>📅 Add to Calendar</button>
+              </div>
+            ))}
           </div>
 
           {/* LOADING & ERROR STATES */}
