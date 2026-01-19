@@ -1,69 +1,71 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
+// Components
 import AuthForm from "./components/AuthForm";
 import Dashboard from "./components/Dashboard";
-import CreatePost from './components/CreatePost';
+import CreatePost from './components/CreatePost'; // Your local component
 import PrivateRoute from "./components/PrivateRoute";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
-import CreateRequest from "./components/CreateRequest";
+import Navbar from "./components/Navbar"; // Added from remote
 
-import './App.css'; // Your global styles
-
-
-
+import './App.css';
 
 function App() {
+  const location = useLocation();
+
   return (
-    <Router>
-      <div className="app-main">
-        <Routes>
-          {/* 1. Public Route: Login/Signup */}
-          <Route path="/" element={<AuthForm />} />
+    <div className="app-main">
+      {/* Show Navbar on all pages EXCEPT Login ("/") */}
+      {location.pathname !== "/" && <Navbar />}
 
-          {/* 2. Protected Routes (Only logged-in users can access) */}
-          <Route 
-            path="/home" 
-            element={
-              <PrivateRoute>
-                <Home />
-              </PrivateRoute>
-            } 
-          />
-          
-          <Route 
-            path="/dashboard" 
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            } 
-          />
+      <Routes>
+        {/* 1. Public Route: Login/Signup */}
+        <Route path="/" element={<AuthForm />} />
 
-          <Route 
-            path="/create" 
-            element={
-              <PrivateRoute>
-                <CreatePost />
-              </PrivateRoute>
-            } 
-          />
+        {/* 2. Protected Routes */}
+        <Route 
+          path="/home" 
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          } 
+        />
+        
+        <Route 
+          path="/dashboard" 
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          } 
+        />
 
-          <Route 
-            path="/profile" 
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            } 
-          />
+        {/* Your 'Create' Route */}
+        <Route 
+          path="/create" 
+          element={
+            <PrivateRoute>
+              <CreatePost />
+            </PrivateRoute>
+          } 
+        />
 
-          {/* Catch-all: Redirect unknown URLs to Home or Login */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </div>
-    </Router>
+        <Route 
+          path="/profile" 
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          } 
+        />
+
+        {/* Catch-all: Redirect unknown URLs to Home */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </div>
   );
 }
 
