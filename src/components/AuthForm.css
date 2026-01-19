@@ -5,6 +5,10 @@
   padding: 0;
   font-family: "Segoe UI", sans-serif;
 }
+.logo{
+  background-color: green;
+  margin-left: 50px;
+}
 
 /* Page center */
 body {
@@ -13,6 +17,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.margin{
+  width: 50%;
+  margin-left: 25%;
+}
+.oauth-buttons{
+  display: flex;
+  align-items: center;
 }
 
 /* Auth Card */
@@ -66,7 +78,7 @@ body {
 }
 
 /* Forms */
-.form-container {
+.form-container {             
   display: flex;
   flex-direction: column;
   animation: fadeIn 0.4s ease;

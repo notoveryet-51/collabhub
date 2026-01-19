@@ -7,6 +7,8 @@
 }
 
 body {
+  display: flex;
+  align-items: center;
   background: #fcfcfc;
   color: #111;
   display: block;
@@ -31,6 +33,7 @@ body {
   font-weight: 800;
   color: #0b0b1d;
   letter-spacing: -0.5px;
+
 }
 
 .nav-right {
@@ -73,7 +76,7 @@ body {
 
 /* ================= CONTAINER ================= */
 .container {
-  max-width: 1300px;
+  
   margin: auto;
   padding: 30px 50px;
 }

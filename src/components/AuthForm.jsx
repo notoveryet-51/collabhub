@@ -190,7 +190,9 @@ const AuthForm = () => {
   };
 
   return ( 
-<><img class="logo" src={name} alt="CollabHub" height="230" width="500" /><div className="container">
+<div className="margin">
+
+<><img className="logo" src={name} alt="CollabHub" height="230" width="500" /><div className="container">
     
       {/* Tabs */}
       <div className="tab-header">
@@ -282,10 +284,10 @@ const AuthForm = () => {
           </button>
 
           <div className="oauth-buttons">
-            <button type="button" disabled={loading} onClick={handleGoogleLogin}>
+            <button  type="button" disabled={loading} onClick={handleGoogleLogin}>
               <i className="fa-brands fa-google"></i> Continue with Google
             </button>
-            <button type="button" disabled={loading} onClick={handleGithubLogin}>
+            <button className="github" type="button" disabled={loading} onClick={handleGithubLogin}>
               <i className="fa-brands fa-github"></i> Continue with GitHub
             </button>
           </div>
@@ -295,6 +297,7 @@ const AuthForm = () => {
       {/* Error */}
       {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
     </div></>
+    </div>
   );
 };
 
