@@ -27,6 +27,19 @@ body {
   flex-direction: column;
   align-items: center;
 }
+@media(max-width: 1400px){
+  .margin{
+    width: 50%;
+    margin-left: 25%;
+  }
+}
+@media(max-width: 700px){
+  .margin{
+    width: 80%;
+    margin-left: 10%
+  };
+}
+
 /* Auth Card */
 .container {
   width: 100%;
