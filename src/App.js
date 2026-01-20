@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import AuthForm from "./components/AuthForm";
 import Dashboard from "./components/Dashboard";
 import PrivateRoute from "./components/PrivateRoute";
-import Navbar from "./components/Navbar"; // Navbar import karein
+import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
 import CreateRequest from "./components/CreateRequest";
@@ -14,12 +14,17 @@ function App() {
 
   return (
     <div className="App">
-      {/* Agar path "/" (Login page) nahi hai, tabhi Navbar dikhao */}
-      {location.pathname !== "/" && <Navbar />}
+      {/* Navbar hamesha dikhao, bas Login page par chhupa sakte ho */}
+      {location.pathname !== "/login" && <Navbar />}
 
       <Routes>
-        <Route path="/" element={<AuthForm />} />
+        {/* 1. Public Route: Jo har koi dekh sakta hai */}
+        <Route path="/" element={<Home />} />
+        
+        {/* 2. Login Route */}
+        <Route path="/login" element={<AuthForm />} />
 
+        {/* 3. Protected Routes: In par click karte hi agar login nahi hai to redirect hoga */}
         <Route
           path="/Dashboard"
           element={
@@ -28,24 +33,20 @@ function App() {
             </PrivateRoute>
           }
         />
-
-        {/* Inhe bhi PrivateRoute ke andar rakhna achha rahega */}
-        <Route 
-          path="/Home" 
-          element={
-            <PrivateRoute><Home /></PrivateRoute>
-          } 
-        />
         <Route 
           path="/Profile" 
           element={
-            <PrivateRoute><Profile /></PrivateRoute>
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
           } 
         />
         <Route 
           path="/CreateRequest" 
           element={
-            <PrivateRoute><CreateRequest /></PrivateRoute>
+            <PrivateRoute>
+              <CreateRequest />
+            </PrivateRoute>
           } 
         />
       </Routes>
