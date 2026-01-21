@@ -1,245 +1,185 @@
-import React, { useEffect, useState } from "react";
-import { auth, db } from "../firebase";
-import {
-  collection,
-  query,
-  orderBy,
-  onSnapshot,
-} from "firebase/firestore";
-import { signOut } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
-import "./Dashboard.css";
+import React, { useState } from 'react';
+import './Dashboard.css';
 
-const Dashboard = () => {
-  const [userName, setUserName] = useState("");
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+// --- Sub-Component: Feed Item (Hackathon/Event Card) ---
+// We separate this so each card can manage its own "Liked" state independently
+const FeedCard = ({ title, detail, date }) => {
+  const [isLiked, setIsLiked] = useState(false);
 
-  // 🔧 missing states (fixed)
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("All");
-
-  const navigate = useNavigate();
-
-  // 🔹 1. Auth check + backend dashboard fetch
-  useEffect(() => {
-    const fetchDashboard = async () => {
-      if (!auth.currentUser) return;
-
-      setUserName(auth.currentUser.displayName || "Student");
-
-      try {
-        const token = await auth.currentUser.getIdToken();
-
-        const res = await fetch("http://localhost:5000/api/user/dashboard", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await res.json();
-        console.log("Backend data:", data);
-      } catch (err) {
-        console.error("Dashboard fetch error:", err);
-      }
-    };
-
-    fetchDashboard();
-  }, []);
-
-  // 🔹 2. Real-time Firestore posts listener
-  useEffect(() => {
-    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-
-    const unsubscribePosts = onSnapshot(q, (snapshot) => {
-      const postsArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setPosts(postsArray);
-      setLoading(false);
-    });
-
-    return () => unsubscribePosts();
-  }, []);
-
-  // 🔹 3. Logout handler
-  const handleLogout = async () => {
-    await signOut(auth);
-    localStorage.removeItem("userLoggedIn");
-    navigate("/");
-  };
-
-  // 🔹 4. Search & filter logic
-  const filteredPosts = posts.filter(
-    (post) =>
-      (post.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.subject?.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (filter === "All" || post.category === filter)
-  );
+  // Icon URLs from your prompt
+  const iconEmpty = "https://cdn.jsdelivr.net/npm/remixicon@4.8.0/icons/Health & Medical/heart-3-line.svg";
+  const iconFilled = "https://cdn.jsdelivr.net/npm/remixicon@4.8.0/icons/Health & Medical/heart-3-fill.svg";
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-layout">
-        {/* LEFT SIDEBAR */}
-        <aside className="dashboard-sidebar">
-          <div className="user-welcome">
-            <h2>Welcome, {userName}! 👋</h2>
-            <p>MNNIT Allahabad Student</p>
-          </div>
+    <div className="card feed-card">
+      <div className="card-content">
+        <h4>{title}</h4>
+        <p>{detail}</p>
+        <small style={{ color: '#888', display: 'block', marginTop: '5px' }}>{date}</small>
+      </div>
+      
+      {/* Wishlist Toggle Icon */}
+      <img 
+        src={isLiked ? iconFilled : iconEmpty} 
+        alt="wishlist" 
+        className="wishlist-icon"
+        onClick={() => setIsLiked(!isLiked)} 
+      />
+    </div>
+  );
+};
 
-          <div className="skills-cloud-card">
-            <h4>Knowledge Network 🌐</h4>
-            <div className="cloud-tags">
-              <span className="cloud-tag active">React</span>
-              <span className="cloud-tag">Python</span>
-              <span className="cloud-tag">DSA</span>
-              <span className="cloud-tag">AI/ML</span>
-              <span className="cloud-tag">Figma</span>
+const Dashboard = () => {
+  // --- Mock Data ---
+  const hackathons = [
+    { id: 1, title: "CodeForIndia 2026", detail: "National level open innovation challenge.", date: "Feb 20, 2026" },
+    { id: 2, title: "AI Gen Hack", detail: "Build the future of Generative AI.", date: "March 05, 2026" },
+    { id: 3, title: "Web3 Summit", detail: "Decentralized apps marathon.", date: "April 10, 2026" },
+  ];
+
+  const events = [
+    { id: 1, title: "React Dev Meetup", detail: "Networking with senior developers.", date: "Tomorrow, 5 PM" },
+    { id: 2, title: "CyberSec Workshop", detail: "Hands-on ethical hacking session.", date: "This Weekend" },
+  ];
+
+  const suggestions = [
+    { id: 1, name: "Rahul Verma", role: "Frontend Developer" },
+    { id: 2, name: "Priya Singh", role: "UI/UX Designer" },
+    { id: 3, name: "Amit Kumar", role: "Data Scientist" },
+  ];
+
+  return (
+    <>
+      
+
+      {/* --- 2. Main Layout (3 Columns) --- */}
+      <div className="dashboard-container">
+        
+        {/* --- Left Sidebar (Fixed 25%) --- */}
+        <aside className="sidebar-left">
+          {/* User Intro Card */}
+          <div className="card">
+            <div style={{ textAlign: 'center', padding: '10px 0' }}>
+              <h3 style={{ marginBottom: '5px' }}>Welcome, Alex!</h3>
+              <p style={{ color: '#666' }}>MNNIT Allahabad</p>
             </div>
           </div>
 
-          <div className="quick-links">
-            <button
-              onClick={() => navigate("/CreateRequest")}
-              className="create-btn-side"
-            >
-              + New Request
-            </button>
-
-            <button onClick={handleLogout} className="logout-btn">
-              Logout
-            </button>
+          {/* Filter/Connection UI */}
+          <div className="card">
+            <h4>Find Connections</h4>
+            <div className="filter-group">
+              <span className="filter-label">Region</span>
+              <select style={{ padding: '5px', borderRadius: '4px' }}>
+                <option>All Regions</option>
+                <option>North India</option>
+                <option>South India</option>
+              </select>
+            </div>
+            <div className="filter-group">
+              <span className="filter-label">Interest</span>
+              <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+                <label><input type="checkbox" /> React</label>
+                <label><input type="checkbox" /> AI/ML</label>
+                <label><input type="checkbox" /> Design</label>
+              </div>
+            </div>
           </div>
         </aside>
 
-        {/* MAIN FEED */}
-        <main className="main-feed">
-          {/* ANALYTICS */}
-          <div className="analytics-grid">
-            <div className="analytics-card">
-              <div className="analytics-icon">🔥</div>
-              <div className="analytics-info">
-                <h3>Active Streak</h3>
-                <p>3 Days</p>
-              </div>
+        {/* --- Middle Section (Scrollable 50%) --- */}
+        <main className="feed-middle">
+          
+          {/* Stats Row */}
+          <div className="stats-row">
+            <div className="stat-box">
+              <span className="stat-number">142</span>
+              <span className="stat-label">Interactions</span>
             </div>
-            <div className="stat-widget">
-              <div className="widget-icon clock">⌛</div>
-              <div className="widget-data">
-                <span>Study Hours</span>
-                <h4>12.5 hrs</h4>
-              </div>
+            <div className="stat-box">
+              <span className="stat-number">5</span>
+              <span className="stat-label">Hackathons</span>
             </div>
-            <div className="stat-widget">
-              <div className="widget-icon check">✅</div>
-              <div className="widget-data">
-                <span>Completed</span>
-                <h4>8 Sessions</h4>
-              </div>
+            <div className="stat-box">
+              <span className="stat-number">8</span>
+              <span className="stat-label">Events</span>
             </div>
           </div>
 
-          {/* RATING */}
-          <section className="rating-analytics-card">
-            <div className="rating-header">
-              <h3>Collaboration Rating</h3>
-              <div className="rating-score">
-                4.9 <span>★</span>
-              </div>
-            </div>
-          </section>
+          {/* Search Bar */}
+          <input 
+            type="text" 
+            className="search-input" 
+            placeholder="Search Hackathons, Events, or Topics..." 
+          />
 
-          {/* SEARCH */}
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="🔍 Search subjects, topics or partners..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          {/* Hackathons Feed */}
+          <h3 className="section-header">Upcoming Hackathons</h3>
+          <div className="feed-list">
+            {hackathons.map((hack) => (
+              <FeedCard 
+                key={hack.id} 
+                title={hack.title} 
+                detail={hack.detail} 
+                date={hack.date} 
+              />
+            ))}
           </div>
 
-          {/* FEED */}
-          <div className="feed">
-            <div className="feed-header">
-              <h3>Live Study Requests</h3>
-              <span className="live-pulse"></span>
-            </div>
-
-            {loading ? (
-              <p>Loading requests...</p>
-            ) : filteredPosts.length > 0 ? (
-              filteredPosts.map((post) => (
-                <div key={post.id} className="study-card">
-                  <div className="card-header">
-                    <span className="badge">
-                      {post.category || "General"}
-                    </span>
-                    <span className="time">
-                      {post.timestamp?.toDate().toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  <div className="card-body">
-                    <h4>
-                      {post.subject}: {post.topic}
-                    </h4>
-                    <p className="poster-info">
-                      By <strong>{post.name}</strong>
-                    </p>
-                    <p className="post-content">{post.content}</p>
-                    {post.deadline && (
-                      <p className="deadline">
-                        🗓 Target Date: {post.deadline}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="card-footer">
-                    <div className="team-size">
-                      👥 Needed: {post.teamSize || 2} Partners
-                    </div>
-                    <button className="join-btn">
-                      Interested (Join)
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="empty-feed">
-                <p>No study requests found. Be the first to post!</p>
-                <button onClick={() => navigate("/CreateRequest")}>
-                  Create a Request
-                </button>
-              </div>
-            )}
+          {/* Events Feed */}
+          <h3 className="section-header">Events Near You</h3>
+          <div className="feed-list">
+            {events.map((evt) => (
+              <FeedCard 
+                key={evt.id} 
+                title={evt.title} 
+                detail={evt.detail} 
+                date={evt.date} 
+              />
+            ))}
           </div>
+          
+          {/* Extra spacer to demonstrate scrolling */}
+          <div style={{ height: '50px', textAlign: 'center', color: '#ccc', paddingTop: '20px' }}>
+            -- End of Feed --
+          </div>
+
         </main>
 
-        {/* RIGHT SIDEBAR */}
-        <aside className="trending-sidebar">
-          <div className="trending-box">
-            <h4>🔥 Trending Topics</h4>
-            <ul className="trending-list">
-              <li>#DSA_Recursion</li>
-              <li>#MNNIT_MCA_Exams</li>
-              <li>#WebDev_React_Project</li>
-              <li>#DBMS_SQL_Practice</li>
+        {/* --- Right Sidebar (Fixed 25%) --- */}
+        <aside className="sidebar-right">
+          
+          {/* Trending Section */}
+          <div className="card">
+            <h4>Trending Now 📈</h4>
+            <ul style={{ listStyle: 'none', marginTop: '10px', paddingLeft: '5px' }}>
+              <li style={{ marginBottom: '8px', fontSize: '0.9rem' }}>#MNNIT_Hackathon</li>
+              <li style={{ marginBottom: '8px', fontSize: '0.9rem' }}>#React19Updates</li>
+              <li style={{ marginBottom: '8px', fontSize: '0.9rem' }}>#SummerInternships</li>
             </ul>
           </div>
 
-          <div className="activity-card-modern">
-            <h4>History</h4>
-            <ul className="history-list">
-              <li>Completed OS Prep</li>
-              <li>Joined WebDev Group</li>
-              <li>Earned "Helper" Badge</li>
-            </ul>
+          {/* Suggestions Section */}
+          <div className="card">
+            <h4>Suggestions For You</h4>
+            <div className="suggestion-list" style={{ marginTop: '15px' }}>
+              {suggestions.map((user) => (
+                <div key={user.id} className="suggestion-item">
+                  <div className="suggestion-avatar"></div>
+                  <div className="suggestion-info">
+                    <div className="suggestion-name">{user.name}</div>
+                    <div className="suggestion-role">{user.role}</div>
+                  </div>
+                  <button className="connect-btn">Collaborate</button>
+                </div>
+              ))}
+            </div>
           </div>
+
         </aside>
+
       </div>
-    </div>
+    </>
   );
 };
 

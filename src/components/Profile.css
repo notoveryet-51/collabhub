@@ -33,6 +33,13 @@
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
 }
 
+.avatar-box{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
 .profile-avatar-section {
   text-align: center;
   margin-bottom: 35px;
@@ -41,8 +48,8 @@
 }
 
 .profile-avatar-img {
-  width: 110px;
-  height: 110px;
+  width: 250px;
+  height: 250px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid #f4f7fe;

@@ -143,11 +143,13 @@ const Profile = () => {
       <div className="profile-card">
         {/* Header Section */}
         <div className="profile-avatar-section">
+          <div className="avatar-box">
           {user.photo ? (
             <img src={user.photo} alt="profile" className="profile-avatar-img" />
           ) : (
             <div className="profile-avatar">{user.name.charAt(0)}</div>
           )}
+          </div>
           <h2>{user.name}</h2>
           <p>{user.email}</p>
         </div>

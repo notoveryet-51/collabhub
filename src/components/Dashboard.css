@@ -1,240 +1,255 @@
-/* --- DASHBOARD LAYOUT --- */
+/* --- Global Reset & Fonts --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f3f2ef; /* Light gray background like LinkedIn */
+  color: #333;
+}
+
+/* --- Navigation Bar (Fixed Top) --- */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  border-bottom: 1px solid #e0e0e0;
+  z-index: 1000; /* Ensures it stays on top */
+}
+
+.nav-left .logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0a66c2; /* Professional Blue */
+  letter-spacing: 1px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #666;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #191919;
+}
+
+.profile-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+/* --- Main Layout Container (3 Columns) --- */
 .dashboard-container {
-  background-color: #f8f9fa;
-  min-height: 100vh;
-}
-
-.dashboard-layout {
-  display: grid;
-  grid-template-columns: 280px 1fr 300px; /* Left Sidebar | Main Feed | Right Sidebar */
-  gap: 25px;
+  display: flex;
+  /* Calculate height: 100% of viewport minus navbar height */
+  height: calc(100vh - 60px); 
+  margin-top: 60px; /* Push down by navbar height */
   max-width: 1400px;
-  margin: 0 auto;
-  padding: 30px 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* --- LEFT SIDEBAR (Renamed to match JSX) --- */
-.dashboard-sidebar {
+/* --- Left Sidebar (Fixed - 25%) --- */
+.sidebar-left {
+  width: 25%;
+  padding: 20px;
+  overflow: hidden; /* Non-scrollable */
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* User Welcome Card */
-.user-welcome {
-  background: #fff;
-  border-radius: 20px;
-  padding: 30px 20px;
+/* --- Middle Section (Scrollable - 50%) --- */
+.feed-middle {
+  width: 50%;
+  padding: 20px;
+  overflow-y: auto; /* SCROLLABLE */
+  /* Hide scrollbar for cleaner look (optional) */
+  scrollbar-width: thin;
+}
+
+/* --- Right Sidebar (Fixed - 25%) --- */
+.sidebar-right {
+  width: 25%;
+  padding: 20px;
+  overflow: hidden; /* Non-scrollable */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- Generic Card Style --- */
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* --- Specific Components --- */
+
+/* Left: Filter Section */
+.filter-group {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.filter-label {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: bold;
+}
+
+/* Middle: Stats Row */
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.stat-box {
+  flex: 1;
+  background: white;
+  padding: 15px;
   text-align: center;
-  border: 1px solid #eee;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
 }
 
-.user-welcome h2 {
-  font-size: 20px;
-  margin-bottom: 5px;
-  color: #111;
+.stat-number {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #0a66c2;
 }
 
-.user-welcome p {
-  font-size: 13px;
+.stat-label {
+  font-size: 0.8rem;
   color: #666;
 }
 
-/* KNOWLEDGE NETWORK */
-.skills-cloud-card {
-  background: white;
-  border-radius: 20px;
-  padding: 22px;
-  border: 1px solid #eee;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
-}
-
-.cloud-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 15px;
-}
-
-.cloud-tag {
-  background: #f4f7fe;
-  padding: 6px 12px;
-  border-radius: 10px;
-  font-size: 12px;
-  color: #4318ff;
-  font-weight: 600;
-}
-
-.cloud-tag.active {
-  background: #0b0b1d;
-  color: white;
-}
-
-/* Quick Links */
-.quick-links {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.create-btn-side {
-  background: #0b0b1d;
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.logout-btn {
-  background: transparent;
-  border: 1px solid #ff4d4d;
-  color: #ff4d4d;
-  padding: 10px;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-/* --- MAIN FEED (Center) --- */
-.main-feed {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* ANALYTICS GRID (Renamed to match JSX) */
-.analytics-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-}
-
-.analytics-card, .stat-widget {
-  background: white;
-  padding: 15px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border: 1px solid #eee;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-}
-
-.analytics-icon, .widget-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  background: #f4f7fe;
-}
-
-.rating-analytics-card {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  border: 1px solid #eee;
-}
-
-/* SEARCH & FEED */
-.search-box input {
+/* Middle: Search Bar */
+.search-input {
   width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  background: #fff;
-  font-size: 14px;
+  padding: 12px 20px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 1rem;
+  margin-bottom: 25px;
+  background-color: #fff;
 }
 
-.feed-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 15px;
-}
-
-.study-card {
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-  border: 1px solid #eee;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.badge {
-  background: #eef2ff;
-  color: #4318ff;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.card-body h4 {
-  font-size: 18px;
-  margin-bottom: 8px;
-}
-
-.join-btn {
-  background: #0b0b1d;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-left: auto; /* Push to right */
-}
-
-/* --- RIGHT SIDEBAR (Trending) --- */
-.trending-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.trending-box {
-  background: white;
-  padding: 20px;
-  border-radius: 20px;
-  border: 1px solid #eee;
-}
-
-.trending-list {
-  list-style: none;
-  padding: 0;
-  margin-top: 15px;
-}
-
-.trending-list li {
-  padding: 10px 0;
-  border-bottom: 1px solid #f5f5f5;
-  font-size: 14px;
+/* Middle: Feed Cards (Hackathons/Events) */
+.section-header {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-top: 10px;
   color: #444;
 }
 
-/* RESPONSIVE */
-@media (max-width: 1100px) {
-  .dashboard-layout {
-    grid-template-columns: 250px 1fr;
-  }
-  .trending-sidebar { display: none; }
+.feed-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
 }
 
-@media (max-width: 800px) {
-  .dashboard-layout {
-    grid-template-columns: 1fr;
-  }
-  .dashboard-sidebar { display: none; }
+.card-content h4 {
+  margin-bottom: 5px;
+  color: #222;
+}
+
+.card-content p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.wishlist-icon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.wishlist-icon:active {
+  transform: scale(1.2);
+}
+
+/* Right: Suggestions */
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.suggestion-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #ddd;
+}
+
+.suggestion-info {
+  flex: 1;
+}
+
+.suggestion-name {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.suggestion-role {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.connect-btn {
+  border: 1px solid #000000;
+  background: transparent;
+  color: #000000;
+  border-radius: 15px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.connect-btn:hover {
+  background: #eef3f8;
 }
