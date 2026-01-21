@@ -89,6 +89,7 @@ function Home() {
   return (
     <div className="home-page">
       <main className="container">
+        <div className="div1"></div>
         {/* SMART MATCHING SECTION */}
         {matchedPosts.length > 0 && (
           <section className="matching-section">
