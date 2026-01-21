@@ -13,6 +13,7 @@
   border: 2px solid black;
   overflow: hidden;
 }
+
 .nav-profile-img{
   width: 120%;
   height: 120%;
@@ -114,8 +115,6 @@ body {
 
 /* ================= CONTAINER ================= */
 .container {
-  
-  margin: auto;
   padding: 30px 50px;
 }
 

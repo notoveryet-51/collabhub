@@ -1,8 +1,9 @@
 /* Floating button */
 .chatbot-fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
+  position: sticky; 
+  top: 90%;  
+  left: 95%;
+  z-index: 1000;
   width: 60px;
   height: 60px;
   background: #007bff;
@@ -14,7 +15,6 @@
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
   transition: transform 0.2s ease;
 }
 
@@ -24,9 +24,9 @@
 
 /* Chat window */
 .chatbot-window {
-  position: fixed;
-  bottom: 100px;
-  right: 24px;
+  position:fixed;
+  top: 30%;
+  left: 77%;
   width: 320px;
   height: 420px;
   background: #ffffff;
