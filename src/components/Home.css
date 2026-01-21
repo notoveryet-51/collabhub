@@ -6,16 +6,40 @@
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
 
+
+ 
+
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 body {
+
+  width: 100%;
+  height: 200px;
+  border-radius: 8px;
+  
+  background: linear-gradient(-45deg, #f4f2f1, #c9c4c6, #adbec5, #d2d6d5);
+  background-size: 400% 400%;
+  
+  animation: gradientFlow 15s ease infinite;
+
   display: flex;
   align-items: center;
-  background: #fcfcfc;
   color: #111;
   display: block;
   min-height: 100vh;
 }
 
-/* ================= NAVBAR ================= */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -26,14 +50,21 @@ body {
   position: sticky;
   top: 0;
   z-index: 1000;
+  border-radius:10px;
+}
+.shape {
+  margin-right: 10px;
+}
+.block{
+  margin-top: 4%;
 }
 
 .logo-placeholder {
+  display: flex;
   font-size: 22px;
   font-weight: 800;
   color: #0b0b1d;
   letter-spacing: -0.5px;
-
 }
 
 .nav-right {
@@ -60,7 +91,7 @@ body {
 }
 
 .cta-button {
-  background: #0b0b1d;
+  background-color: black;
   color: #fff;
   border: none;
   padding: 10px 20px;

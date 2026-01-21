@@ -1,8 +1,35 @@
+body {
+  background: linear-gradient(100deg, #ffffff, #dbc3d8, #999aa8, #9d9cb4);
+  background-size: 400% 200%;
+  animation: gradientAnimation 15s ease infinite;
+  border: 3px solid white;
+  border-radius: 15px;
+  margin: 0;
+  height: 100%;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .profile-page {
   padding: 40px;
-  background-color: #fafafa;
+  background-blend-mode: color-burn;
+  background: linear-gradient(50deg, #b9bec0 0%, #c2b6c4 100%);
   min-height: 100vh;
+  box-shadow:0px 0px 60px #334155(103, 92, 11);
   font-family: Arial, sans-serif;
+  border: 2px solid white;
 }
 
 .profile-title {
@@ -16,8 +43,11 @@
 }
 
 .profile-card {
-  background: #fff;
+  background: linear-gradient(50deg, #ffffff 0%, #a49da5 100%);
+  box-shadow: 0px 0px 80px black;
   border-radius: 14px;
+  border:2px solid white;
+  border-color: rgb(255, 255, 255);
   padding: 30px;
   
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -30,6 +60,7 @@
 }
 
 .profile-avatar {
+  border: 2px solid rgb(150, 150, 235);
   width: 90px;
   height: 90px;
   border-radius: 50%;
@@ -59,12 +90,20 @@
 }
 
 .info-box {
+  box-shadow: 0 0 10px #363839;
   border: 1px solid #eee;
   border-radius: 10px;
   padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+.info-box:hover{
+  box-shadow: 0 0 0px #38BDF8;
+  transition: 0.2s;
+  margin-bottom:0px;
+  
+  height: 90%;
 }
 
 .label {
@@ -79,8 +118,7 @@
 }
 
 .btn-primary {
-  background: #0b0d1c;
-  color: #fff;
+  background: #38BDF8;
   border: none;
   padding: 10px 18px;
   border-radius: 8px;
@@ -92,7 +130,7 @@
 }
 
 .btn-secondary {
-  background: #f1f1f1;
+  background: #38BDF8;
   color: #000;
   border: none;
   padding: 10px 18px;

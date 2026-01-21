@@ -1,69 +1,54 @@
 import React from "react";
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
-
-// Components
+import { Routes, Route, useLocation } from "react-router-dom";
 import AuthForm from "./components/AuthForm";
 import Dashboard from "./components/Dashboard";
-import CreatePost from './components/CreatePost'; // Your local component
 import PrivateRoute from "./components/PrivateRoute";
+import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Profile from "./components/Profile";
-import Navbar from "./components/Navbar"; // Added from remote
-
-import './App.css';
+import CreateRequest from "./components/CreateRequest";
+import "./App.css";
 
 function App() {
   const location = useLocation();
 
   return (
-    <div className="app-main">
-      {/* Show Navbar on all pages EXCEPT Login ("/") */}
-      {location.pathname !== "/" && <Navbar />}
+    <div className="App">
+      {/* Navbar hamesha dikhao, bas Login page par chhupa sakte ho */}
+      {location.pathname !== "/login" && <Navbar />}
 
       <Routes>
-        {/* 1. Public Route: Login/Signup */}
-        <Route path="/" element={<AuthForm />} />
-
-        {/* 2. Protected Routes */}
-        <Route 
-          path="/home" 
-          element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          } 
-        />
+        {/* 1. Public Route: Jo har koi dekh sakta hai */}
+        <Route path="/" element={<Home />} />
         
-        <Route 
-          path="/dashboard" 
+        {/* 2. Login Route */}
+        <Route path="/login" element={<AuthForm />} />
+
+        {/* 3. Protected Routes: In par click karte hi agar login nahi hai to redirect hoga */}
+        <Route
+          path="/Dashboard"
           element={
             <PrivateRoute>
               <Dashboard />
             </PrivateRoute>
-          } 
+          }
         />
-
-        {/* Your 'Create' Route */}
         <Route 
-          path="/create" 
-          element={
-            <PrivateRoute>
-              <CreatePost />
-            </PrivateRoute>
-          } 
-        />
-
-        <Route 
-          path="/profile" 
+          path="/Profile" 
           element={
             <PrivateRoute>
               <Profile />
             </PrivateRoute>
           } 
         />
-
-        {/* Catch-all: Redirect unknown URLs to Home */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route 
+          path="/CreateRequest" 
+          element={
+            <PrivateRoute>
+              <CreateRequest />
+            </PrivateRoute>
+          } 
+        />
       </Routes>
     </div>
   );
