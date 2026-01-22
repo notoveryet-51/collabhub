@@ -1,10 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import App from "./App";
+
+// Updated: Added .js extension
+import App from "./App.js";
+
 import "./index.css";
 import "./styles/theme.css";
-import { ThemeProvider } from "./context/ThemeContext";
+
+// Updated: Added .jsx extension
+import { ThemeProvider } from "./context/ThemeContext.jsx";
 
 // Find root element
 const rootElement = document.getElementById("root");

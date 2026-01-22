@@ -35,11 +35,8 @@ const AuthForm = () => {
   const githubProvider = new GithubAuthProvider();
 
   // ---------------- HELPER: SYNC WITH MONGODB ----------------
-  // This is the new bridge function
   const syncWithBackend = async (user) => {
     try {
-      // Ensure we use the exact field names your Backend expects:
-      // uid, email, displayName, photoURL
       await fetch("http://localhost:5000/api/auth/sync", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -118,8 +115,7 @@ const AuthForm = () => {
         displayName: signupName,
       });
 
-      // 3. Sync with MongoDB (Now that name is set)
-      // We pass 'userCredential.user' but also fallback to 'signupName' inside the function
+      // 3. Sync with MongoDB
       await syncWithBackend(userCredential.user);
 
       navigate("/Home");
@@ -187,21 +183,21 @@ const AuthForm = () => {
         <img className="shape1" src={hex} alt="CollabHub" height="72" width="78" />
        
         <img className="logo" src={name} alt="CollabHub" height="60" width="300" />   
-     
+      
       
       <div className="container1">
-        <ul class="circles">
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-                    <li></li>
-            </ul>
+        <ul className="circles"> {/* Corrected: class -> className */}
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
         <div className="tab-header">
           <div className={`tab ${activeTab === "login" ? "active" : ""}`} onClick={() => setActiveTab("login")}>Login</div>
           <div className={`tab ${activeTab === "signup" ? "active" : ""}`} onClick={() => setActiveTab("signup")}>Sign Up</div>
@@ -300,7 +296,7 @@ const AuthForm = () => {
           {/* Error */}
           {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
         </div>
-      </>
+      {/* Removed orphan </> tag here */}
     </div>
   );
 };
