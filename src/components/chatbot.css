@@ -111,3 +111,20 @@
   cursor: pointer;
   font-weight: bold;
 }
+/* Dark-light mode*/
+.chatbot-window {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.chatbot-header {
+  background: var(--primary);
+  color: white;
+}
+
+.chatbot-footer input {
+  background: var(--bg-color);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}

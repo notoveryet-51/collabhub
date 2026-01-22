@@ -43,6 +43,20 @@ img {
   display: block;
 }
 
+/* ================= DARK/LIGHT MODE ================= */
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.navbar {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+}
+
+
 /* ================= REMOVE CRA DEFAULT STYLES ================= */
 /* (Intentional empty — App-header, App-logo, animations removed) */
 
