@@ -41,32 +41,41 @@ const Profile = () => {
   const [phoneError, setPhoneError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ---------- Sync Auth & Local Data ----------
+  // ---------- 1. SYNC DATA FROM DATABASE ----------
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
       if (!u) {
         navigate("/");
         return;
       }
       setFirebaseUser(u);
 
-      const savedData = localStorage.getItem("userLoggedIn");
-      const parsed = savedData ? JSON.parse(savedData) : {};
+      try {
+        // FETCH FROM MONGODB API
+        const response = await fetch(`http://localhost:5000/api/user/${u.uid}`);
+        
+        if (response.ok) {
+          const dbUser = await response.json();
+          
+          // Update State with DB Data
+          setUser({
+            name: dbUser.displayName || u.displayName || "User",
+            email: dbUser.email,
+            photo: dbUser.photoURL,
+            location: dbUser.location || { city: "", college: "" },
+            interests: dbUser.interests || []
+          });
 
-      const userData = {
-        name: u.displayName || parsed.name || "User",
-        email: u.email || parsed.email || "",
-        photo: u.photoURL || parsed.photo || null,
-        location: parsed.location || { city: "", college: "" },
-        interests: parsed.interests || []
-      };
-
-      setUser(userData);
-      setEditFields({
-        college: userData.location.college || "",
-        city: userData.location.city || "",
-        interests: userData.interests.join(", ") || ""
-      });
+          // Pre-fill the input boxes
+          setEditFields({
+            college: dbUser.location?.college || "",
+            city: dbUser.location?.city || "",
+            interests: dbUser.interests ? dbUser.interests.join(", ") : ""
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load profile from DB:", err);
+      }
     });
     return () => unsub();
   }, [navigate]);
@@ -76,15 +85,54 @@ const Profile = () => {
     setEditFields({ ...editFields, [e.target.name]: e.target.value });
   };
 
-  const handleSaveProfile = () => {
-    const updated = {
-      ...user,
-      location: { city: editFields.city, college: editFields.college },
-      interests: editFields.interests.split(",").map(i => i.trim()).filter(i => i !== "")
+  // ---------- 2. SAVE TO DATABASE ----------
+  const handleSaveProfile = async () => {
+    if (!firebaseUser) return;
+
+    // Convert comma-separated string back to array
+    const interestArray = editFields.interests.split(",").map(i => i.trim()).filter(i => i !== "");
+
+    // Prepare the payload for MongoDB
+    const updatedData = {
+      uid: firebaseUser.uid,
+      displayName: user.name,
+      photoURL: user.photo,
+      location: { 
+        city: editFields.city, 
+        college: editFields.college 
+      },
+      interests: interestArray
     };
-    setUser(updated);
-    localStorage.setItem("userLoggedIn", JSON.stringify(updated));
-    alert("✅ Profile details updated locally!");
+
+    try {
+      // SEND PUT REQUEST TO BACKEND
+      const response = await fetch("http://localhost:5000/api/user/update", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        const savedUser = await response.json();
+        
+        // Update local UI immediately
+        setUser({
+            ...user,
+            location: savedUser.location,
+            interests: savedUser.interests
+        });
+        
+        // Also update LocalStorage as a backup
+        localStorage.setItem("userLoggedIn", JSON.stringify(savedUser));
+        
+        alert("✅ Profile updated successfully in Database!");
+      } else {
+        alert("❌ Failed to update profile in database.");
+      }
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      alert("❌ Server Error: Check if backend is running.");
+    }
   };
 
   const handleLogout = async () => {
@@ -93,7 +141,7 @@ const Profile = () => {
     navigate("/");
   };
 
-  // ---------- Firebase Phone Logic ----------
+  // ---------- Firebase Phone Logic (Kept Same) ----------
   const setupRecaptcha = () => {
     if (window.recaptchaVerifier) window.recaptchaVerifier.clear();
     window.recaptchaVerifier = new RecaptchaVerifier("recaptcha-container", { size: "invisible" }, auth);

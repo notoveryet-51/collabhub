@@ -2,37 +2,28 @@ import express from "express";
 import User from "../models/User.js";
 import Hackathon from "../models/Hackathon.js";
 import Event from "../models/Event.js";
-import Post from "../models/Post.js"; // Assuming you have this from before
+import Post from "../models/Post.js"; 
 
 const router = express.Router();
 
-// --- 1. RIGHT SIDEBAR DATA (Stats & Trending) ---
-// Frontend calls: GET /api/dashboard/stats/:uid
+// 1. STATS
 router.get('/stats/:uid', async (req, res) => {
   try {
     const user = await User.findOne({ uid: req.params.uid });
-    
-    // Logic to calculate counts for the sidebar boxes
     const stats = {
       streak: user.stats?.loginStreak || 0,
       hackathonsParticipated: user.participatingEvents?.length || 0,
-      eventsParticipated: 5, // You can make this dynamic later based on DB
+      eventsParticipated: user.favorites?.length || 0, // Showing Likes as "Events" count for now
     };
-
-    // "Trending Topics" - Fetch top 3 active Hackathons or Posts
-    const trending = await Hackathon.find({ isTrending: true }).limit(3).select('title description');
-
-    res.json({ stats, trending });
+    res.json({ stats });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// --- 2. MIDDLE SECTION (Hackathons List) ---
-// Frontend calls: GET /api/dashboard/hackathons
+// 2. HACKATHONS
 router.get('/hackathons', async (req, res) => {
   try {
-    // Sort by newest first
     const hackathons = await Hackathon.find().sort({ createdAt: -1 });
     res.json(hackathons);
   } catch (err) {
@@ -40,31 +31,44 @@ router.get('/hackathons', async (req, res) => {
   }
 });
 
-// --- 3. MIDDLE SECTION (Events List) ---
-// Frontend calls: GET /api/dashboard/events
+// 3. EVENTS
 router.get('/events', async (req, res) => {
   try {
-    const events = await Event.find().sort({ date: 1 }); // Sort by upcoming date
+    const events = await Event.find().sort({ date: 1 });
     res.json(events);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// --- 4. SEARCH BAR LOGIC ---
-// Frontend calls: GET /api/dashboard/search?q=react
-router.get('/search', async (req, res) => {
-  const { q } = req.query; // The text user typed
+// 4. REAL SUGGESTIONS (New!)
+router.get('/suggestions/:uid', async (req, res) => {
   try {
-    // Search Regex (Case insensitive)
+    // 1. Find Current User to exclude friends
+    const currentUser = await User.findOne({ uid: req.params.uid });
+    const friendIds = currentUser ? currentUser.friends : [];
+
+    // 2. Find Users who are NOT me AND NOT my friends
+    const suggestions = await User.find({ 
+        uid: { $ne: req.params.uid },
+        _id: { $nin: friendIds } // Exclude existing friends
+    })
+    .limit(5) // Suggest 5 people
+    .select('displayName location uid role'); 
+    
+    res.json(suggestions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. SEARCH
+router.get('/search', async (req, res) => {
+  const { q } = req.query;
+  try {
     const regex = new RegExp(q, 'i');
-
-    // Search in Users, Hackathons, and Posts simultaneously
-    const users = await User.find({ displayName: regex }).select('displayName photoURL uid');
-    const hackathons = await Hackathon.find({ title: regex }).select('title description');
-    const posts = await Post.find({ title: regex }).select('title description');
-
-    res.json({ users, hackathons, posts });
+    const hackathons = await Hackathon.find({ title: regex });
+    res.json({ hackathons });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -3,11 +3,10 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-// --- 1. GET USER PROFILE ---
-// Frontend calls: GET /api/user/:uid
+// 1. GET USER (Fetch profile & pending requests)
 router.get("/:uid", async (req, res) => {
   try {
-    const user = await User.findOne({ uid: req.params.uid }).populate("friends", "displayName photoURL email");
+    const user = await User.findOne({ uid: req.params.uid });
     if (!user) return res.status(404).json({ message: "User not found" });
     res.json(user);
   } catch (err) {
@@ -15,98 +14,109 @@ router.get("/:uid", async (req, res) => {
   }
 });
 
-// --- 2. UPDATE PROFILE (Location, Interests, etc.) ---
-// Frontend calls: PUT /api/user/update
-// Body: { uid, location: { city: "Prayagraj", ... }, interests: ["React", "Music"] }
+// 2. UPDATE PROFILE
 router.put("/update", async (req, res) => {
   try {
     const { uid, location, interests, displayName, photoURL } = req.body;
-    
     const updatedUser = await User.findOneAndUpdate(
       { uid: uid },
-      { 
-        $set: { 
-          location, 
-          interests, 
-          displayName,
-          photoURL 
-        } 
-      },
-      { new: true } // Return the updated document
+      { $set: { location, interests, displayName, photoURL } },
+      { new: true }
     );
-    
     res.json(updatedUser);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// --- 3. "ASK MATE" (Send Friend Request) ---
-// Frontend calls: POST /api/user/friend-request
-// Body: { senderUid, receiverUid, note }
+// 3. SEND REQUEST (User A -> User B)
 router.post("/friend-request", async (req, res) => {
   try {
     const { senderUid, receiverUid, note } = req.body;
 
-    // Find both users
     const sender = await User.findOne({ uid: senderUid });
     const receiver = await User.findOne({ uid: receiverUid });
 
     if (!sender || !receiver) return res.status(404).json({ message: "User not found" });
 
-    // Check if already friends or requested
-    const existingRequest = receiver.friendRequests.find(req => req.senderId.equals(sender._id));
-    if (existingRequest) return res.status(400).json({ message: "Request already sent" });
+    // Prevent duplicate requests
+    const alreadyRequested = receiver.friendRequests.some(
+        req => req.senderId.toString() === sender._id.toString()
+    );
+    // Prevent sending if already friends
+    const alreadyFriends = receiver.friends.includes(sender._id);
 
-    // Add request to receiver's list
+    if (alreadyRequested || alreadyFriends) {
+        return res.status(400).json({ message: "Request already sent or already friends." });
+    }
+
+    // Add request to Receiver's "Inbox"
     receiver.friendRequests.push({
       senderId: sender._id,
       senderName: sender.displayName,
-      note: note, // The "Short Note" you wanted
+      note: note,
       status: "pending"
     });
 
     await receiver.save();
-    res.json({ message: "Ask Mate request sent successfully!" });
+    console.log(`📩 Request sent from ${sender.displayName} to ${receiver.displayName}`);
+    res.json({ message: "Request sent successfully!" });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// --- 4. RESPOND TO REQUEST (Accept/Reject) ---
-// Frontend calls: PUT /api/user/friend-request/respond
-// Body: { userUid, senderId, action: "accept" or "reject" }
+// 4. ACCEPT REQUEST (User B accepts User A)
 router.put("/friend-request/respond", async (req, res) => {
   try {
-    const { userUid, senderId, action } = req.body;
+    const { userUid, senderId, action } = req.body; // senderId is the Mongo _id from the request list
     
-    const user = await User.findOne({ uid: userUid });
-    const sender = await User.findById(senderId); // MongoDB _id here
+    const user = await User.findOne({ uid: userUid }); // Me (The Receiver)
+    const sender = await User.findById(senderId); // Them (The Sender)
 
     if (action === "accept") {
-      // Add to friends list for BOTH users
+      // Link them as friends
       user.friends.push(sender._id);
       sender.friends.push(user._id);
-
-      // Add "Achievement" for making a new connection
-      user.achievements.push({
-        title: "New Connection",
-        description: `Connected with ${sender.displayName}`,
-        badgeIcon: "🤝"
-      });
-
       await sender.save();
+      console.log(`🤝 ${user.displayName} is now friends with ${sender.displayName}`);
     }
 
-    // Remove the request from the array (handled for both accept/reject)
-    user.friendRequests = user.friendRequests.filter(req => !req.senderId.equals(sender._id));
+    // Remove the request from the list (whether accepted or rejected)
+    user.friendRequests = user.friendRequests.filter(
+        req => req.senderId.toString() !== senderId
+    );
     
     await user.save();
-    res.json({ message: `Request ${action}ed`, friends: user.friends });
+    
+    // Return updated friend list and requests
+    res.json({ 
+        message: `Request ${action}ed`, 
+        friends: user.friends,
+        friendRequests: user.friendRequests 
+    });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. FAVORITE (Heart)
+router.put("/favorite", async (req, res) => {
+  const { uid, itemId } = req.body; 
+  try {
+    const user = await User.findOne({ uid });
+    if (!user.favorites) user.favorites = [];
+    
+    const index = user.favorites.indexOf(itemId);
+    if (index === -1) user.favorites.push(itemId);
+    else user.favorites.splice(index, 1);
+
+    await user.save();
+    res.json(user.favorites);
+  } catch (err) {
+    res.status(500).send(err.message);
   }
 });
 

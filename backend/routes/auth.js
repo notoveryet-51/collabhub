@@ -3,32 +3,32 @@ import User from "../models/User.js";
 
 const router = express.Router();
 
-// POST /api/auth/sync
-// Triggered by Frontend after Firebase Login success
+// ROUTE: POST /api/auth/sync
+// DESC: Called by Frontend immediately after Firebase Login
 router.post("/sync", async (req, res) => {
   const { uid, email, displayName, photoURL } = req.body;
 
   try {
-    // findOneAndUpdate with 'upsert: true' is the secret key here.
-    // It means: "Find this user. If missing, CREATE them. If found, UPDATE them."
+    // "Upsert": Update if exists, Create if new
     const user = await User.findOneAndUpdate(
-      { uid: uid }, // Search by Firebase UID
+      { uid: uid },
       {
         $set: {
           email: email,
           displayName: displayName || "Collab Student",
           photoURL: photoURL,
-          "stats.lastLogin": new Date() // Always update login time
+          "stats.lastLogin": new Date()
         },
-        // Only set these defaults if we are creating a BRAND NEW user
+        // Defaults for NEW users only
         $setOnInsert: {
           "location.country": "India",
           interests: [],
           friends: [],
+          friendRequests: [], // Important for connections
           stats: { loginStreak: 1, totalCollaborations: 0 }
         }
       },
-      { new: true, upsert: true } // Return the new doc & Create if missing
+      { new: true, upsert: true }
     );
 
     console.log(`✅ User Synced: ${user.displayName}`);
