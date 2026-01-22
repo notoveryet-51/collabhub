@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { db, auth } from "../firebase";
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from "firebase/firestore";
 import "./Home.css";
+import logo from './images/shape.png';
 
 function Home() {
   const [posts, setPosts] = useState([]);
@@ -88,8 +89,20 @@ function Home() {
 
   return (
     <div className="home-page">
+       <div className="div1">
+        <div className="block1">
+  
+          <div className="welcome"><h1>Welcome to</h1></div>
+          
+          <div className="welcome1"><h1>the</h1></div>
+          <div className="welcome2"><h1>COLLABHUB</h1></div>
+        
+        </div>
+        <div className="block2">
+        </div>
+       </div>
       <main className="container">
-        <div className="div1"></div>
+       
         {/* SMART MATCHING SECTION */}
         {matchedPosts.length > 0 && (
           <section className="matching-section">

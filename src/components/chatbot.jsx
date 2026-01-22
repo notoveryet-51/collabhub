@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import ReactDOM from "react-dom"; // 👈 Import this
 import "./chatbot.css";
 
 const Chatbot = () => {
   const [open, setOpen] = useState(false);
 
-  return (
+  // We wrap the whole thing in a Portal
+  return ReactDOM.createPortal(
     <>
       {/* Floating Button */}
       <div
@@ -33,7 +35,8 @@ const Chatbot = () => {
           </div>
         </div>
       )}
-    </>
+    </>,
+    document.body // 👈 This tells React: "Render this directly in the <body> tag"
   );
 };
 

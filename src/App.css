@@ -7,9 +7,7 @@
   min-height: 100vh;
   width: 100%;
   background-color: #ffffff;
-  
   align-items: center;
-
 }
 
 /* ================= GLOBAL RESET ================= */
@@ -17,7 +15,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #072853;
+  background-color: rgb(235, 238, 240);
   color: #111;
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }

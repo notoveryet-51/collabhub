@@ -46,7 +46,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="nav-left">
         <Link to="/" className="logo-placeholder" style={{ textDecoration: 'none' }}>
-          <img className="shape" src={shape} alt="CollabHub" height="40" width="40" />
+          <img className="shape" src={shape} alt="CollabHub" height="40" width="43" />
           <div className="block">COLLABHUB</div>
         </Link>
       </div>

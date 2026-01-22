@@ -1,7 +1,7 @@
 /* Floating button */
 .chatbot-fab {
   position: sticky; 
-  top: 90%;  
+  bottom: 5%;  
   left: 95%;
   z-index: 1000;
   width: 60px;
@@ -24,8 +24,8 @@
 
 /* Chat window */
 .chatbot-window {
-  position:fixed;
-  top: 30%;
+  position:sticky;
+  bottom: 15%;
   left: 77%;
   width: 320px;
   height: 420px;

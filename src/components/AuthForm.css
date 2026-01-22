@@ -176,12 +176,31 @@ body {
     margin-left: 10%
   };
 }
+.logo-holder{
+  background-color: green;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.shape1{
+  animation: spin 8s linear infinite;
+  margin-top: 10%;
+}
 
 /* Auth Card */
-.container {
-  margin-top: 0px;
+.container1 {
+  padding: 10px 50px;
   width: 100%;
-  padding: 32px;
   border: 3px solid rgb(255, 255, 255);
   border-radius: 25px;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 50);
