@@ -1,21 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import './index.css';
-import App from './App';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import "./index.css";
+import "./styles/theme.css";
+import { ThemeProvider } from "./context/ThemeContext";
 
-// This line looks for <div id="root"> in the file above
-const rootElement = document.getElementById('root'); 
+// Find root element
+const rootElement = document.getElementById("root");
 
 if (!rootElement) {
-    throw new Error("Failed to find the root element");
+  throw new Error("Failed to find the root element");
 }
 
+// Create root ONCE
 const root = ReactDOM.createRoot(rootElement);
+
+// Render ONCE
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
