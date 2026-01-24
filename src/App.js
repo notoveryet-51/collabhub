@@ -9,6 +9,8 @@ import Home from "./components/Home";
 import Profile from "./components/Profile";
 import CreateRequest from "./components/CreateRequest";
 import Chatbot from "./components/chatbot";
+import SearchPage from "./pages/SearchPage";
+import ProfilePage from "./pages/ProfilePage";
 
 import "./App.css";
 
@@ -28,6 +30,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<AuthForm />} />
 
+        {/* Search */}
+        <Route path="/search" element={<SearchPage />} />
+
         {/* Protected Routes */}
         <Route
           path="/Dashboard"
@@ -46,7 +51,7 @@ function App() {
             </PrivateRoute>
           }
         />
-
+        <Route path="/profile/:id" element={<ProfilePage />} />
         <Route
           path="/CreateRequest"
           element={

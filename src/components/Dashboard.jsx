@@ -8,6 +8,7 @@ import {
 } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import UserSuggestions from "./UserSuggestions";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -218,26 +219,31 @@ const Dashboard = () => {
         </main>
 
         {/* RIGHT SIDEBAR */}
-        <aside className="trending-sidebar">
-          <div className="trending-box">
-            <h4>🔥 Trending Topics</h4>
-            <ul className="trending-list">
-              <li>#DSA_Recursion</li>
-              <li>#MNNIT_MCA_Exams</li>
-              <li>#WebDev_React_Project</li>
-              <li>#DBMS_SQL_Practice</li>
-            </ul>
-          </div>
+<aside className="trending-sidebar">
 
-          <div className="activity-card-modern">
-            <h4>History</h4>
-            <ul className="history-list">
-              <li>Completed OS Prep</li>
-              <li>Joined WebDev Group</li>
-              <li>Earned "Helper" Badge</li>
-            </ul>
-          </div>
-        </aside>
+  {/* 🔥 USER SUGGESTIONS */}
+  <UserSuggestions />
+
+  <div className="trending-box">
+    <h4>🔥 Trending Topics</h4>
+    <ul className="trending-list">
+      <li>#DSA_Recursion</li>
+      <li>#MNNIT_MCA_Exams</li>
+      <li>#WebDev_React_Project</li>
+      <li>#DBMS_SQL_Practice</li>
+    </ul>
+  </div>
+
+  <div className="activity-card-modern">
+    <h4>History</h4>
+    <ul className="history-list">
+      <li>Completed OS Prep</li>
+      <li>Joined WebDev Group</li>
+      <li>Earned "Helper" Badge</li>
+    </ul>
+  </div>
+</aside>
+
       </div>
     </div>
   );
